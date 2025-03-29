@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -8,7 +7,15 @@ import DemoShowcase from '@/components/DemoShowcase';
 import TypesSection from '@/components/TypesSection';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Database } from 'lucide-react';
-import { UpdateAction } from '@/lib/objectUpdater';
+import { UpdateAction, UpdateRule } from '@/lib/objectUpdater';
+
+interface UseCase {
+  title: string;
+  description: string;
+  action: UpdateAction;
+  sourceObject: Record<string, any>;
+  rules: UpdateRule[];
+}
 
 const ruleExplanations = [
   {
@@ -100,7 +107,7 @@ const initialPlaygroundObject = {
   }
 };
 
-const initialPlaygroundRules = [
+const initialPlaygroundRules: UpdateRule[] = [
   {
     action: 'REPLACE',
     path: 'config.theme.colors.primary',
@@ -125,7 +132,7 @@ const initialPlaygroundRules = [
   }
 ];
 
-const useCases = [
+const useCases: UseCase[] = [
   {
     title: 'Config Management',
     description: 'Merging user configuration with default settings',

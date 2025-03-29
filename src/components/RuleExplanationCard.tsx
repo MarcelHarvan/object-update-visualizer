@@ -8,7 +8,7 @@ import {
   XCircle, 
   Trash2, 
   MergeIcon, 
-  Union, 
+  GitMerge, // Replacing Union with GitMerge
   RefreshCcw 
 } from 'lucide-react';
 
@@ -24,7 +24,7 @@ const iconMap: Record<UpdateAction, React.ReactNode> = {
   'IGNORE': <XCircle className="h-5 w-5" />,
   'DELETE': <Trash2 className="h-5 w-5" />,
   'MERGE': <MergeIcon className="h-5 w-5" />,
-  'UNION': <Union className="h-5 w-5" />,
+  'UNION': <GitMerge className="h-5 w-5" />, // Using GitMerge instead of Union
   'UPSERT_BY_KEY': <RefreshCcw className="h-5 w-5" />,
 };
 
