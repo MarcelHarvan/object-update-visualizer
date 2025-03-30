@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { PlayIcon, RefreshCw } from 'lucide-react';
-import { Updater } from 'object_updater';
+import { updateObject } from 'object_updater';
 import JsonDiff from './JsonDiff';
 import {
   BarChart,
@@ -37,15 +37,17 @@ const Playground: React.FC<PlaygroundProps> = ({
   description = 'Try different update rules and see the results in real-time'
 }) => {
   const [originalObject, setOriginalObject] = useState(initialObject);
-  const [updateObject, setUpdateObject] = useState(initialUpdate);
+  const [_updateObject, setUpdateObject] = useState(initialUpdate);
   const [rules, setRules] = useState(initialRules);
   const [resultObject, setResultObject] = useState<Record<string, any>>({});
   const [rulesText, setRulesText] = useState('');
   const [objectText, setObjectText] = useState('');
   const [updateText, setUpdateText] = useState('');
   const [error, setError] = useState<string | null>(null);
-  const updater = new Updater(); // Create an instance of the Updater class
+  // const updater = updateObject; // Create an instance of the Updater class
   
+
+
   // Format the initial data
   useEffect(() => {
     setObjectText(JSON.stringify(initialObject, null, 2));
@@ -75,7 +77,7 @@ const Playground: React.FC<PlaygroundProps> = ({
       // Using the updateObject method from Updater instance
       // Create a deep copy of parsedObject to avoid updating the original
       const objectToUpdate = JSON.parse(JSON.stringify(parsedObject));
-      const result = updater.updateObject(objectToUpdate, parsedUpdate, parsedRules);
+      const result = updateObject(objectToUpdate, parsedUpdate, parsedRules);
       setResultObject(result);
       setError(null);
     } catch (err) {
@@ -184,7 +186,6 @@ const Playground: React.FC<PlaygroundProps> = ({
     
     return chartData;
   };
-
   return (
     <Card className="w-full">
       <CardHeader>
@@ -242,9 +243,9 @@ const Playground: React.FC<PlaygroundProps> = ({
             Reset
           </Button>
         </div>
-        
+
         <JsonDiff before={originalObject} after={resultObject} />
-        
+       
         <div className="mt-6">
           <Tabs defaultValue="bar">
             <TabsList className="mb-4">

@@ -13,7 +13,7 @@ import {
 } from 'lucide-react';
 import JsonDiff from './JsonDiff';
 // Import from object_updater package instead of the local file
-import { UpdateAction, Updater } from 'object_updater';
+import { UpdateAction, updateObject } from 'object_updater';
 
 interface UseCase {
   title: string;
@@ -49,13 +49,13 @@ const colorMap: Record<string, string> = {
 };
 
 const DemoShowcase: React.FC<DemoShowcaseProps> = ({ useCases }) => {
-  const updater = new Updater();
+
   
   const useCasesWithResults = useMemo(() => {
     return useCases.map(useCase => {
       const sourceObjectCopy = JSON.parse(JSON.stringify(useCase.sourceObject));
       // Apply the update to the source object
-      const updatedObject = updater.updateObject(
+      const updatedObject = updateObject(
         sourceObjectCopy,
         useCase.updateObject,
         useCase.rules
@@ -66,7 +66,7 @@ const DemoShowcase: React.FC<DemoShowcaseProps> = ({ useCases }) => {
         resultObject: updatedObject
       };
     });
-  }, [useCases, updater]);
+  }, [useCases, updateObject]);
   
   return (
     <Tabs defaultValue={useCases[0]?.title.toLowerCase().replace(/\s+/g, '-') || '0'}>

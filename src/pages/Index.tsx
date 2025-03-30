@@ -9,6 +9,7 @@ import TypesSection from '@/components/TypesSection';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Database } from 'lucide-react';
 import { UpdateAction } from 'object_updater';
+import { GITHUB_URL, NPM_URL } from '@/Constrains';
 
 interface UseCase {
   title: string;
@@ -91,7 +92,7 @@ const initialPlaygroundObject = {
     { id: 1, name: "Alice" },
     { id: 2, name: "Bob" }
   ],
-  salary: 5000
+  stars: 5
 };
 
 const initialPlaygroundUpdate = {
@@ -102,7 +103,7 @@ const initialPlaygroundUpdate = {
     { id: 2, name: "Bobby" },
     { id: 3, name: "Charlie" }
   ],
-  salary: 6000
+  stars: 6
 };
 
 const initialPlaygroundRules = {
@@ -110,7 +111,7 @@ const initialPlaygroundRules = {
   age: { action: UpdateAction.IGNORE },
   tags: { action: UpdateAction.UNION },
   users: { action: UpdateAction.UPSERT_BY_KEY, mergeKey: "id" },
-  salary: { action: UpdateAction.REPLACE }
+  stars: { action: UpdateAction.REPLACE }
 };
 
 const useCases: UseCase[] = [
@@ -204,7 +205,7 @@ const Index = () => {
   return (
     <div className="min-h-screen flex flex-col bg-docs-background">
       <Header />
-      
+
       <main className="flex-1">
         <section className="py-16 md:py-24 border-b">
           <div className="container max-w-5xl mx-auto px-4">
@@ -213,23 +214,27 @@ const Index = () => {
                 <Database className="w-6 h-6 text-docs-primary" />
               </div>
               <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-4">
-                Generic Object Updater
+                Generic Object Updater with Rules
               </h1>
               <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
                 A powerful, TypeScript-first library for declarative object updates with configurable rules
               </p>
               <div className="flex flex-wrap gap-4 justify-center">
-                <Button size="lg" className="gap-2">
-                  Get Started <ArrowRight size={16} />
-                </Button>
-                <Button size="lg" variant="outline">
-                  View on GitHub
-                </Button>
+                <a href={NPM_URL} target="_blank" rel="noopener noreferrer">
+                  <Button size="lg" className="gap-2">
+                    Get Started <ArrowRight size={16} />
+                  </Button>
+                </a>
+                <a href={GITHUB_URL} target="_blank" rel="noopener noreferrer">
+                  <Button size="lg" variant="outline">
+                    View on GitHub
+                  </Button>
+                </a>
               </div>
             </div>
           </div>
         </section>
-        
+
         <section className="py-16">
           <div className="container max-w-6xl mx-auto px-4">
             <div className="text-center mb-12">
@@ -238,7 +243,7 @@ const Index = () => {
                 Powerful and configurable ways to handle object updates with declarative rules
               </p>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {ruleExplanations.map((rule) => (
                 <RuleExplanationCard
@@ -252,7 +257,7 @@ const Index = () => {
             </div>
           </div>
         </section>
-        
+
         <section className="py-16 bg-gradient-to-b from-transparent to-muted/30">
           <div className="container max-w-6xl mx-auto px-4">
             <div className="text-center mb-12">
@@ -263,7 +268,7 @@ const Index = () => {
                 Try different update rules and see the results in real-time with visual feedback
               </p>
             </div>
-            
+
             <Playground
               initialObject={initialPlaygroundObject}
               initialUpdate={initialPlaygroundUpdate}
@@ -271,7 +276,7 @@ const Index = () => {
             />
           </div>
         </section>
-        
+
         <section className="py-16">
           <div className="container max-w-6xl mx-auto px-4">
             <div className="text-center mb-12">
@@ -282,11 +287,11 @@ const Index = () => {
                 See how Generic Object Updater can be used in real-world scenarios
               </p>
             </div>
-            
+
             <DemoShowcase useCases={useCases} />
           </div>
         </section>
-        
+
         <section className="py-16 bg-gradient-to-b from-transparent to-muted/30">
           <div className="container max-w-6xl mx-auto px-4">
             <div className="text-center mb-12">
@@ -297,12 +302,12 @@ const Index = () => {
                 Enjoy full type safety and IntelliSense support throughout your codebase
               </p>
             </div>
-            
+
             <TypesSection />
           </div>
         </section>
       </main>
-      
+
       <Footer />
     </div>
   );

@@ -3,7 +3,10 @@ import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 const TypesSection: React.FC = () => {
-  const typeDefinitions = `// Update action enum
+  const typeDefinitions = `
+/**
+* Defines the possible actions that can be performed when updating an object.
+*/
 export enum UpdateAction {
     /** Deletes the property from the original object */
     DELETE = 'DELETE',
@@ -20,13 +23,17 @@ export enum UpdateAction {
     UPSERT_BY_KEY = 'UPSERT_BY_KEY'
 }
 
-// Rule definition interface
+/**
+ * Defines a rule for updating a primitive data type.
+ * It contains an action property that specifies the update action to be performed.
+ */
 export interface PrimitiveRule {
     /** Represents action for update */
     action: UpdateAction;
     /** 
      * Represents update key for arrays of objects.
-     */
+     * 
+    */
     mergeKey?: string;
 }`;
 
