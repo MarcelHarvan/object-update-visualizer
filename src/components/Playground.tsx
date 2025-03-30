@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { PlayIcon, RefreshCw } from 'lucide-react';
-import { UpdateAction, updateObject } from 'object_updater';
+import { UpdateAction, updateObject } from '@/lib/objectUpdater';
 import JsonDiff from './JsonDiff';
 import {
   BarChart,
@@ -70,7 +70,7 @@ const Playground: React.FC<PlaygroundProps> = ({
       setRules(parsedRules);
       
       // Using the object_updater library
-      const result = updateObject(parsedObject, parsedUpdate, parsedRules);
+      const result = updateObject(parsedObject, parsedRules);
       setResultObject(result);
       setError(null);
     } catch (err) {
@@ -92,7 +92,7 @@ const Playground: React.FC<PlaygroundProps> = ({
       const parsedUpdate = JSON.parse(updateText);
       const parsedRules = JSON.parse(rulesText);
       
-      const result = updateObject(parsedObject, parsedUpdate, parsedRules);
+      const result = updateObject(parsedObject, parsedRules);
       setResultObject(result);
       setError(null);
     } catch (err) {
