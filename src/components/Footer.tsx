@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Github, Twitter } from 'lucide-react';
+import { GITHUB_URL, WEB_NAME } from '@/Constrains';
 
 const Footer: React.FC = () => {
   return (
@@ -8,24 +9,24 @@ const Footer: React.FC = () => {
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row justify-between items-center gap-4">
           <div>
-            <h3 className="font-semibold text-lg">Generic Object Updater</h3>
+            <h3 className="font-semibold text-lg">{WEB_NAME}</h3>
             <p className="text-muted-foreground text-sm">
               A powerful library for declarative object updates in TypeScript
             </p>
           </div>
           
           <div className="flex gap-4">
-            <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
+            <a href={GITHUB_URL} className="text-muted-foreground hover:text-foreground transition-colors">
               <Github size={20} />
             </a>
-            <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
+            {/* <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
               <Twitter size={20} />
-            </a>
+            </a> */}
           </div>
         </div>
         
         <div className="mt-8 text-center text-sm text-muted-foreground">
-          &copy; {new Date().getFullYear()} Generic Object Updater. All rights reserved.
+          &copy; {new Date().getFullYear()} {WEB_NAME}. All rights reserved.
         </div>
       </div>
     </footer>

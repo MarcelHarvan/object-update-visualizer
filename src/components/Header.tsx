@@ -2,6 +2,7 @@
 import React from 'react';
 import { Book, Code, Database } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { GITHUB_URL, README_URL, WEB_NAME } from '@/Constrains';
 
 const Header: React.FC = () => {
   return (
@@ -11,27 +12,31 @@ const Header: React.FC = () => {
           <Database className="w-8 h-8 text-docs-primary" />
           <div>
             <h1 className="font-bold text-xl md:text-2xl tracking-tight">
-              Generic Object Updater
+              {WEB_NAME}
             </h1>
             <p className="text-muted-foreground text-sm">TypeScript-powered declarative object manipulation</p>
           </div>
         </div>
         
         <div className="flex items-center gap-2">
+          <a href={README_URL} target='_blank' rel="noopener noreferrer">
           <Button variant="ghost" size="sm" className="flex items-center gap-2">
             <Book size={16} />
             <span>Docs</span>
           </Button>
+          </a>
+          <a href={GITHUB_URL} target='_blank' rel="noopener noreferrer">
           <Button variant="ghost" size="sm" className="flex items-center gap-2">
             <Code size={16} />
             <span>GitHub</span>
           </Button>
-          <Button variant="outline" size="sm">
+          </a>
+          {/* <Button variant="outline" size="sm">
             Install
           </Button>
           <Button size="sm">
             Try it Out
-          </Button>
+          </Button> */}
         </div>
       </div>
     </header>
