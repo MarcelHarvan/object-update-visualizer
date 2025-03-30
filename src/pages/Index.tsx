@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -8,12 +7,7 @@ import DemoShowcase from '@/components/DemoShowcase';
 import TypesSection from '@/components/TypesSection';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Database } from 'lucide-react';
-import { UpdateAction } from 'object_updater';
-
-interface PrimitiveRule {
-  action: UpdateAction;
-  mergeKey?: string;
-}
+import { PrimitiveRule, UpdateAction } from 'object_updater';
 
 interface UseCase {
   title: string;

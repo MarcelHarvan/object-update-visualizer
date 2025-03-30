@@ -1,10 +1,9 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { PlayIcon, RefreshCw } from 'lucide-react';
-import { UpdateAction, updateObject } from '@/lib/objectUpdater';
+import { PrimitiveRule, UpdateAction, Updater } from 'object_updater';
 import JsonDiff from './JsonDiff';
 import {
   BarChart,
@@ -18,12 +17,6 @@ import {
   Bar, 
   Pie
 } from 'recharts';
-
-// Updated interface using the object_updater library
-interface PrimitiveRule {
-  action: UpdateAction;
-  mergeKey?: string;
-}
 
 interface PlaygroundProps {
   initialObject: Record<string, any>;
@@ -50,6 +43,7 @@ const Playground: React.FC<PlaygroundProps> = ({
   const [objectText, setObjectText] = useState('');
   const [updateText, setUpdateText] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const updater = new Updater();
   
   // Format the initial data
   useEffect(() => {
@@ -69,8 +63,8 @@ const Playground: React.FC<PlaygroundProps> = ({
       setUpdateObject(parsedUpdate);
       setRules(parsedRules);
       
-      // Using the object_updater library
-      const result = updateObject(parsedObject, parsedRules);
+      // Using the object_updater library with Updater class
+      const result = updater.updateObject(parsedObject, parsedUpdate, parsedRules);
       setResultObject(result);
       setError(null);
     } catch (err) {
@@ -92,7 +86,8 @@ const Playground: React.FC<PlaygroundProps> = ({
       const parsedUpdate = JSON.parse(updateText);
       const parsedRules = JSON.parse(rulesText);
       
-      const result = updateObject(parsedObject, parsedRules);
+      // Using the object_updater library with Updater class
+      const result = updater.updateObject(parsedObject, parsedUpdate, parsedRules);
       setResultObject(result);
       setError(null);
     } catch (err) {
