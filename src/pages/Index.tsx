@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -8,7 +7,6 @@ import DemoShowcase from '@/components/DemoShowcase';
 import TypesSection from '@/components/TypesSection';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Database } from 'lucide-react';
-// Import from object_updater package instead of the local file
 import { UpdateAction } from 'object_updater';
 
 interface UseCase {
@@ -27,7 +25,7 @@ const ruleExplanations = [
     description: 'Completely replaces the value at the specified path with a new value.',
     example: `{
   "name": {
-    action: UpdateAction.REPLACE
+    action: "${UpdateAction.REPLACE}"
   }
 }`
   },
@@ -37,7 +35,7 @@ const ruleExplanations = [
     description: 'Keeps the original value, ignoring any updates to this property.',
     example: `{
   "config": {
-    action: UpdateAction.IGNORE
+    action: "${UpdateAction.IGNORE}"
   }
 }`
   },
@@ -47,7 +45,7 @@ const ruleExplanations = [
     description: 'Completely removes the property from the original object.',
     example: `{
   "temporaryData": {
-    action: UpdateAction.DELETE
+    action: "${UpdateAction.DELETE}"
   }
 }`
   },
@@ -57,7 +55,7 @@ const ruleExplanations = [
     description: 'Deep merges arrays, combining values from both original and update arrays.',
     example: `{
   "settings": {
-    action: UpdateAction.MERGE
+    action: "${UpdateAction.MERGE}"
   }
 }`
   },
@@ -67,7 +65,7 @@ const ruleExplanations = [
     description: 'Creates a union of arrays, ensuring no duplicate values are added.',
     example: `{
   "permissions": {
-    action: UpdateAction.UNION
+    action: "${UpdateAction.UNION}"
   }
 }`
   },
@@ -77,14 +75,13 @@ const ruleExplanations = [
     description: 'Updates existing items or inserts new ones in an array based on a key property.',
     example: `{
   "users": {
-    action: UpdateAction.UPSERT_BY_KEY,
+    action: "${UpdateAction.UPSERT_BY_KEY}",
     mergeKey: "id"
   }
 }`
   }
 ];
 
-// Initial data for the playground
 const initialPlaygroundObject = {
   name: "Alice",
   age: 30,
@@ -208,7 +205,6 @@ const Index = () => {
       <Header />
       
       <main className="flex-1">
-        {/* Hero section */}
         <section className="py-16 md:py-24 border-b">
           <div className="container max-w-5xl mx-auto px-4">
             <div className="text-center mb-12">
@@ -233,7 +229,6 @@ const Index = () => {
           </div>
         </section>
         
-        {/* Rules explanation section */}
         <section className="py-16">
           <div className="container max-w-6xl mx-auto px-4">
             <div className="text-center mb-12">
@@ -246,7 +241,7 @@ const Index = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {ruleExplanations.map((rule) => (
                 <RuleExplanationCard
-                  key={rule.action}
+                  key={String(rule.action)}
                   action={rule.action}
                   title={rule.title}
                   description={rule.description}
@@ -257,7 +252,6 @@ const Index = () => {
           </div>
         </section>
         
-        {/* Interactive playground section */}
         <section className="py-16 bg-gradient-to-b from-transparent to-muted/30">
           <div className="container max-w-6xl mx-auto px-4">
             <div className="text-center mb-12">
@@ -277,7 +271,6 @@ const Index = () => {
           </div>
         </section>
         
-        {/* Use cases section */}
         <section className="py-16">
           <div className="container max-w-6xl mx-auto px-4">
             <div className="text-center mb-12">
@@ -293,7 +286,6 @@ const Index = () => {
           </div>
         </section>
         
-        {/* TypeScript section */}
         <section className="py-16 bg-gradient-to-b from-transparent to-muted/30">
           <div className="container max-w-6xl mx-auto px-4">
             <div className="text-center mb-12">

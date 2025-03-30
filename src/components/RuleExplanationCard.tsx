@@ -21,7 +21,7 @@ interface RuleExplanationCardProps {
   example: string;
 }
 
-const iconMap = {
+const iconMap: Record<string, React.ReactNode> = {
   [UpdateAction.DELETE]: <Trash2 className="h-5 w-5" />,
   [UpdateAction.IGNORE]: <XCircle className="h-5 w-5" />,
   [UpdateAction.REPLACE]: <Replace className="h-5 w-5" />,
@@ -30,7 +30,7 @@ const iconMap = {
   [UpdateAction.UPSERT_BY_KEY]: <RefreshCcw className="h-5 w-5" />
 };
 
-const colorMap = {
+const colorMap: Record<string, string> = {
   [UpdateAction.DELETE]: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
   [UpdateAction.IGNORE]: 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200',
   [UpdateAction.REPLACE]: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
@@ -45,16 +45,19 @@ const RuleExplanationCard: React.FC<RuleExplanationCardProps> = ({
   description,
   example
 }) => {
+  // Convert action to string to ensure it's not being passed as an object
+  const actionKey = String(action);
+  
   return (
     <Card className="h-full">
       <CardHeader className="pb-2">
         <div className="flex justify-between items-start">
           <CardTitle className="text-lg">{title}</CardTitle>
           <Badge 
-            className={`flex items-center gap-1 ${colorMap[action]} border-0`}
+            className={`flex items-center gap-1 ${colorMap[actionKey]} border-0`}
           >
-            {iconMap[action]}
-            <span>{action}</span>
+            {iconMap[actionKey]}
+            <span>{actionKey}</span>
           </Badge>
         </div>
         <CardDescription>{description}</CardDescription>

@@ -28,7 +28,7 @@ interface DemoShowcaseProps {
   useCases: UseCase[];
 }
 
-const iconMap = {
+const iconMap: Record<string, React.ReactNode> = {
   [UpdateAction.DELETE]: <Trash2 className="h-5 w-5" />,
   [UpdateAction.IGNORE]: <XCircle className="h-5 w-5" />,
   [UpdateAction.REPLACE]: <Replace className="h-5 w-5" />,
@@ -37,7 +37,7 @@ const iconMap = {
   [UpdateAction.UPSERT_BY_KEY]: <RefreshCcw className="h-5 w-5" />
 };
 
-const colorMap = {
+const colorMap: Record<string, string> = {
   [UpdateAction.DELETE]: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
   [UpdateAction.IGNORE]: 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200',
   [UpdateAction.REPLACE]: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
@@ -75,54 +75,59 @@ const DemoShowcase: React.FC<DemoShowcaseProps> = ({ useCases }) => {
         ))}
       </TabsList>
       
-      {useCasesWithResults.map((useCase, index) => (
-        <TabsContent 
-          key={index} 
-          value={useCase.title.toLowerCase().replace(/\s+/g, '-')}
-        >
-          <Card>
-            <CardHeader>
-              <div className="flex justify-between items-start">
-                <div>
-                  <CardTitle>{useCase.title}</CardTitle>
-                  <CardDescription>{useCase.description}</CardDescription>
+      {useCasesWithResults.map((useCase, index) => {
+        // Convert action to string to ensure it's not rendered as an object
+        const actionKey = String(useCase.action);
+        
+        return (
+          <TabsContent 
+            key={index} 
+            value={useCase.title.toLowerCase().replace(/\s+/g, '-')}
+          >
+            <Card>
+              <CardHeader>
+                <div className="flex justify-between items-start">
+                  <div>
+                    <CardTitle>{useCase.title}</CardTitle>
+                    <CardDescription>{useCase.description}</CardDescription>
+                  </div>
+                  <Badge className={`flex items-center gap-1 ${colorMap[actionKey]} border-0`}>
+                    {iconMap[actionKey]}
+                    <span>{actionKey}</span>
+                  </Badge>
                 </div>
-                <Badge className={`flex items-center gap-1 ${colorMap[useCase.action]} border-0`}>
-                  {iconMap[useCase.action]}
-                  <span>{useCase.action}</span>
-                </Badge>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-                <div>
-                  <h3 className="text-sm font-medium mb-2">Original Object</h3>
-                  <div className="code-block p-3 text-xs font-mono rounded-md bg-muted">
-                    <pre>{JSON.stringify(useCase.sourceObject, null, 2)}</pre>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                  <div>
+                    <h3 className="text-sm font-medium mb-2">Original Object</h3>
+                    <div className="code-block p-3 text-xs font-mono rounded-md bg-muted">
+                      <pre>{JSON.stringify(useCase.sourceObject, null, 2)}</pre>
+                    </div>
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-medium mb-2">Update</h3>
+                    <div className="code-block p-3 text-xs font-mono rounded-md bg-muted">
+                      <pre>{JSON.stringify(useCase.updateObject, null, 2)}</pre>
+                    </div>
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-medium mb-2">Rules</h3>
+                    <div className="code-block p-3 text-xs font-mono rounded-md bg-muted">
+                      <pre>{JSON.stringify(useCase.rules, null, 2)}</pre>
+                    </div>
                   </div>
                 </div>
-                <div>
-                  <h3 className="text-sm font-medium mb-2">Update</h3>
-                  <div className="code-block p-3 text-xs font-mono rounded-md bg-muted">
-                    <pre>{JSON.stringify(useCase.updateObject, null, 2)}</pre>
-                  </div>
+                
+                <div className="mt-6">
+                  <h3 className="text-sm font-medium mb-2">Result After Update</h3>
+                  <JsonDiff before={useCase.sourceObject} after={useCase.resultObject} />
                 </div>
-                <div>
-                  <h3 className="text-sm font-medium mb-2">Rules</h3>
-                  <div className="code-block p-3 text-xs font-mono rounded-md bg-muted">
-                    <pre>{JSON.stringify(useCase.rules, null, 2)}</pre>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="mt-6">
-                <h3 className="text-sm font-medium mb-2">Result After Update</h3>
-                <JsonDiff before={useCase.sourceObject} after={useCase.resultObject} />
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      ))}
+              </CardContent>
+            </Card>
+          </TabsContent>
+        );
+      })}
     </Tabs>
   );
 };
