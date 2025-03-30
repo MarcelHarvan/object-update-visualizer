@@ -4,10 +4,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { PlayIcon, RefreshCw } from 'lucide-react';
-import { updateObject, UpdateRule } from '@/lib/objectUpdater';
+import { UpdateAction, updateObject } from 'object_updater';
 import JsonDiff from './JsonDiff';
-import { Bar, Pie } from 'recharts';
-import { 
+import {
   BarChart,
   PieChart,
   Cell,
@@ -15,12 +14,21 @@ import {
   YAxis,
   Tooltip,
   Legend,
-  ResponsiveContainer
+  ResponsiveContainer,
+  Bar, 
+  Pie
 } from 'recharts';
+
+// Updated interface using the object_updater library
+interface PrimitiveRule {
+  action: UpdateAction;
+  mergeKey?: string;
+}
 
 interface PlaygroundProps {
   initialObject: Record<string, any>;
-  initialRules: UpdateRule[];
+  initialUpdate: Record<string, any>;
+  initialRules: Record<string, PrimitiveRule>;
   title?: string;
   description?: string;
 }
@@ -29,42 +37,51 @@ const COLORS = ['#8B5CF6', '#06B6D4', '#FCD34D', '#F87171', '#10B981', '#A78BFA'
 
 const Playground: React.FC<PlaygroundProps> = ({
   initialObject,
+  initialUpdate,
   initialRules,
   title = 'Interactive Playground',
   description = 'Try different update rules and see the results in real-time'
 }) => {
   const [originalObject, setOriginalObject] = useState(initialObject);
+  const [updateObject, setUpdateObject] = useState(initialUpdate);
   const [rules, setRules] = useState(initialRules);
   const [resultObject, setResultObject] = useState({});
   const [rulesText, setRulesText] = useState('');
   const [objectText, setObjectText] = useState('');
+  const [updateText, setUpdateText] = useState('');
   const [error, setError] = useState<string | null>(null);
   
   // Format the initial data
   useEffect(() => {
     setObjectText(JSON.stringify(originalObject, null, 2));
+    setUpdateText(JSON.stringify(updateObject, null, 2));
     setRulesText(JSON.stringify(initialRules, null, 2));
-  }, [initialObject, initialRules]);
+  }, [initialObject, initialUpdate, initialRules]);
 
   // Apply the rules on input change
   useEffect(() => {
     try {
       const parsedObject = JSON.parse(objectText);
+      const parsedUpdate = JSON.parse(updateText);
       const parsedRules = JSON.parse(rulesText);
+      
       setOriginalObject(parsedObject);
+      setUpdateObject(parsedUpdate);
       setRules(parsedRules);
       
-      const result = updateObject(parsedObject, parsedRules);
+      // Using the object_updater library
+      const result = updateObject(parsedObject, parsedUpdate, parsedRules);
       setResultObject(result);
       setError(null);
     } catch (err) {
       setError((err as Error).message);
     }
-  }, [objectText, rulesText]);
+  }, [objectText, updateText, rulesText]);
 
   // Reset to initial values
   const handleReset = () => {
     setObjectText(JSON.stringify(initialObject, null, 2));
+    setUpdateText(JSON.stringify(initialUpdate, null, 2));
     setRulesText(JSON.stringify(initialRules, null, 2));
   };
 
@@ -72,9 +89,10 @@ const Playground: React.FC<PlaygroundProps> = ({
   const handleApply = () => {
     try {
       const parsedObject = JSON.parse(objectText);
+      const parsedUpdate = JSON.parse(updateText);
       const parsedRules = JSON.parse(rulesText);
       
-      const result = updateObject(parsedObject, parsedRules);
+      const result = updateObject(parsedObject, parsedUpdate, parsedRules);
       setResultObject(result);
       setError(null);
     } catch (err) {
@@ -91,7 +109,7 @@ const Playground: React.FC<PlaygroundProps> = ({
         name: key,
         before: typeof value === 'number' ? value : 
                (typeof value === 'object' && value !== null ? 
-                 Object.keys(value).length : 
+                 (Array.isArray(value) ? value.length : Object.keys(value).length) : 
                  value ? 1 : 0)
       };
     });
@@ -101,7 +119,7 @@ const Playground: React.FC<PlaygroundProps> = ({
         name: key,
         after: typeof value === 'number' ? value : 
               (typeof value === 'object' && value !== null ? 
-                Object.keys(value).length : 
+                (Array.isArray(value) ? value.length : Object.keys(value).length) : 
                 value ? 1 : 0)
       };
     });
@@ -144,13 +162,21 @@ const Playground: React.FC<PlaygroundProps> = ({
           </div>
         )}
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
           <div>
-            <h3 className="text-sm font-medium mb-2">Source Object</h3>
+            <h3 className="text-sm font-medium mb-2">Original Object</h3>
             <textarea
               className="w-full h-60 code-block p-3 font-mono text-xs"
               value={objectText}
               onChange={(e) => setObjectText(e.target.value)}
+            />
+          </div>
+          <div>
+            <h3 className="text-sm font-medium mb-2">Update</h3>
+            <textarea
+              className="w-full h-60 code-block p-3 font-mono text-xs"
+              value={updateText}
+              onChange={(e) => setUpdateText(e.target.value)}
             />
           </div>
           <div>

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -7,156 +8,138 @@ import DemoShowcase from '@/components/DemoShowcase';
 import TypesSection from '@/components/TypesSection';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Database } from 'lucide-react';
-import { UpdateAction, UpdateRule } from '@/lib/objectUpdater';
+import { UpdateAction } from 'object_updater';
+
+interface PrimitiveRule {
+  action: UpdateAction;
+  mergeKey?: string;
+}
 
 interface UseCase {
   title: string;
   description: string;
   action: UpdateAction;
   sourceObject: Record<string, any>;
-  rules: UpdateRule[];
+  updateObject: Record<string, any>;
+  rules: Record<string, PrimitiveRule>;
 }
 
 const ruleExplanations = [
   {
-    action: 'REPLACE' as UpdateAction,
+    action: UpdateAction.REPLACE,
     title: 'Replace',
     description: 'Completely replaces the value at the specified path with a new value.',
     example: `{
-  action: 'REPLACE',
-  path: 'theme.colors.primary',
-  value: '#8B5CF6'
+  "name": {
+    action: UpdateAction.REPLACE
+  }
 }`
   },
   {
-    action: 'IGNORE' as UpdateAction,
+    action: UpdateAction.IGNORE,
     title: 'Ignore',
     description: 'Keeps the original value, ignoring any updates to this property.',
     example: `{
-  action: 'IGNORE',
-  path: 'config.readOnly'
+  "config": {
+    action: UpdateAction.IGNORE
+  }
 }`
   },
   {
-    action: 'DELETE' as UpdateAction,
+    action: UpdateAction.DELETE,
     title: 'Delete',
-    description: 'Completely removes the property at the specified path.',
+    description: 'Completely removes the property from the original object.',
     example: `{
-  action: 'DELETE',
-  path: 'user.temporaryData'
+  "temporaryData": {
+    action: UpdateAction.DELETE
+  }
 }`
   },
   {
-    action: 'MERGE' as UpdateAction,
+    action: UpdateAction.MERGE,
     title: 'Merge',
-    description: 'Deep merges objects, combining properties from both original and update.',
+    description: 'Deep merges arrays, combining values from both original and update arrays.',
     example: `{
-  action: 'MERGE',
-  path: 'settings',
-  value: { darkMode: true }
+  "settings": {
+    action: UpdateAction.MERGE
+  }
 }`
   },
   {
-    action: 'UNION' as UpdateAction,
+    action: UpdateAction.UNION,
     title: 'Union',
     description: 'Creates a union of arrays, ensuring no duplicate values are added.',
     example: `{
-  action: 'UNION',
-  path: 'permissions',
-  value: ['read', 'write']
+  "permissions": {
+    action: UpdateAction.UNION
+  }
 }`
   },
   {
-    action: 'UPSERT_BY_KEY' as UpdateAction,
+    action: UpdateAction.UPSERT_BY_KEY,
     title: 'Upsert By Key',
     description: 'Updates existing items or inserts new ones in an array based on a key property.',
     example: `{
-  action: 'UPSERT_BY_KEY',
-  path: 'users',
-  value: [{ id: 123, name: 'Alex' }],
-  keyProperty: 'id'
+  "users": {
+    action: UpdateAction.UPSERT_BY_KEY,
+    mergeKey: "id"
+  }
 }`
   }
 ];
 
 const initialPlaygroundObject = {
-  config: {
-    theme: {
-      colors: {
-        primary: '#8B5CF6',
-        secondary: '#10B981'
-      },
-      fonts: {
-        heading: 'Inter',
-        body: 'Roboto'
-      }
-    },
-    features: [
-      { id: 'dashboard', enabled: true },
-      { id: 'reports', enabled: false },
-      { id: 'analytics', enabled: true }
-    ]
-  },
-  user: {
-    id: 1,
-    name: 'John Doe',
-    preferences: {
-      notifications: true,
-      darkMode: false
-    }
-  }
+  name: "Alice",
+  age: 30,
+  tags: ["developer", "engineer"],
+  users: [
+    { id: 1, name: "Alice" },
+    { id: 2, name: "Bob" }
+  ]
 };
 
-const initialPlaygroundRules: UpdateRule[] = [
-  {
-    action: 'REPLACE',
-    path: 'config.theme.colors.primary',
-    value: '#FCD34D'
-  },
-  {
-    action: 'MERGE',
-    path: 'user.preferences',
-    value: {
-      darkMode: true,
-      compactView: true
-    }
-  },
-  {
-    action: 'UPSERT_BY_KEY',
-    path: 'config.features',
-    value: [
-      { id: 'reports', enabled: true },
-      { id: 'chat', enabled: true }
-    ],
-    keyProperty: 'id'
-  }
-];
+const initialPlaygroundUpdate = {
+  name: "Alice Johnson",
+  age: 31,
+  tags: ["engineer", "designer"],
+  users: [
+    { id: 2, name: "Bobby" },
+    { id: 3, name: "Charlie" }
+  ]
+};
+
+const initialPlaygroundRules: Record<string, PrimitiveRule> = {
+  name: { action: UpdateAction.REPLACE },
+  age: { action: UpdateAction.IGNORE },
+  tags: { action: UpdateAction.UNION },
+  users: { action: UpdateAction.UPSERT_BY_KEY, mergeKey: "id" }
+};
 
 const useCases: UseCase[] = [
   {
     title: 'Config Management',
     description: 'Merging user configuration with default settings',
-    action: 'MERGE' as UpdateAction,
+    action: UpdateAction.MERGE,
     sourceObject: {
       theme: 'light',
       fontSize: 16,
       notifications: false
     },
-    rules: [
-      {
-        action: 'MERGE',
-        path: '',
-        value: {
-          theme: 'dark',
-          animations: true
-        }
-      }
-    ]
+    updateObject: {
+      theme: 'dark',
+      animations: true
+    },
+    rules: {
+      theme: { action: UpdateAction.REPLACE },
+      animations: { action: UpdateAction.REPLACE },
+      fontSize: { action: UpdateAction.IGNORE },
+      notifications: { action: UpdateAction.IGNORE }
+    }
   },
   {
     title: 'Data Transformation',
     description: 'Transforming API data to fit application needs',
-    action: 'REPLACE' as UpdateAction,
+    action: UpdateAction.REPLACE,
     sourceObject: {
       user: {
         firstName: 'John',
@@ -171,30 +154,25 @@ const useCases: UseCase[] = [
         { id: 2, status: 'shipped' }
       ]
     },
-    rules: [
-      {
-        action: 'REPLACE',
-        path: 'user',
-        value: {
-          name: 'John Doe',
-          location: 'New York'
-        }
+    updateObject: {
+      user: {
+        name: 'John Doe',
+        location: 'New York'
       },
-      {
-        action: 'UPSERT_BY_KEY',
-        path: 'orders',
-        value: [
-          { id: 2, status: 'delivered' },
-          { id: 3, status: 'processing' }
-        ],
-        keyProperty: 'id'
-      }
-    ]
+      orders: [
+        { id: 2, status: 'delivered' },
+        { id: 3, status: 'processing' }
+      ]
+    },
+    rules: {
+      user: { action: UpdateAction.REPLACE },
+      orders: { action: UpdateAction.UPSERT_BY_KEY, mergeKey: 'id' }
+    }
   },
   {
     title: 'State Management',
     description: 'Handling complex state updates in frontend applications',
-    action: 'UPSERT_BY_KEY' as UpdateAction,
+    action: UpdateAction.UPSERT_BY_KEY,
     sourceObject: {
       todos: [
         { id: 1, text: 'Learn TypeScript', completed: false },
@@ -206,25 +184,21 @@ const useCases: UseCase[] = [
         total: 2
       }
     },
-    rules: [
-      {
-        action: 'UPSERT_BY_KEY',
-        path: 'todos',
-        value: [
-          { id: 1, completed: true },
-          { id: 3, text: 'Write tests', completed: false }
-        ],
-        keyProperty: 'id'
-      },
-      {
-        action: 'REPLACE',
-        path: 'stats',
-        value: {
-          completed: 1,
-          total: 3
-        }
+    updateObject: {
+      todos: [
+        { id: 1, completed: true },
+        { id: 3, text: 'Write tests', completed: false }
+      ],
+      stats: {
+        completed: 1,
+        total: 3
       }
-    ]
+    },
+    rules: {
+      todos: { action: UpdateAction.UPSERT_BY_KEY, mergeKey: 'id' },
+      stats: { action: UpdateAction.REPLACE },
+      filter: { action: UpdateAction.IGNORE }
+    }
   }
 ];
 
@@ -297,6 +271,7 @@ const Index = () => {
             
             <Playground
               initialObject={initialPlaygroundObject}
+              initialUpdate={initialPlaygroundUpdate}
               initialRules={initialPlaygroundRules}
             />
           </div>
