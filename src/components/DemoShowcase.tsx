@@ -1,9 +1,8 @@
-
 import React, { useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { UpdateAction, Updater } from 'object_updater';
+import { UpdateAction, updateObject, UpdateRule } from '@/lib/objectUpdater';
 import { 
   Replace, 
   XCircle, 
@@ -20,14 +19,14 @@ interface UseCase {
   action: UpdateAction;
   sourceObject: Record<string, any>;
   updateObject: Record<string, any>;
-  rules: Record<string, any>;
+  rules: Record<string, UpdateRule>;
 }
 
 interface DemoShowcaseProps {
   useCases: UseCase[];
 }
 
-const iconMap = {
+const iconMap: Record<UpdateAction, React.ReactNode> = {
   [UpdateAction.DELETE]: <Trash2 className="h-5 w-5" />,
   [UpdateAction.IGNORE]: <XCircle className="h-5 w-5" />,
   [UpdateAction.REPLACE]: <Replace className="h-5 w-5" />,
@@ -36,7 +35,7 @@ const iconMap = {
   [UpdateAction.UPSERT_BY_KEY]: <RefreshCcw className="h-5 w-5" />,
 };
 
-const colorMap = {
+const colorMap: Record<UpdateAction, string> = {
   [UpdateAction.DELETE]: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
   [UpdateAction.IGNORE]: 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200',
   [UpdateAction.REPLACE]: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
@@ -46,16 +45,10 @@ const colorMap = {
 };
 
 const DemoShowcase: React.FC<DemoShowcaseProps> = ({ useCases }) => {
-  const updater = new Updater();
-  
-  // Calculate the result objects for each use case
   const useCasesWithResults = useMemo(() => {
     return useCases.map(useCase => {
-      const resultObject = updater.updateObject(
-        useCase.sourceObject, 
-        useCase.updateObject, 
-        useCase.rules
-      );
+      const sourceObjectCopy = JSON.parse(JSON.stringify(useCase.sourceObject));
+      const resultObject = updateObject(sourceObjectCopy, useCase.rules);
       
       return {
         ...useCase,

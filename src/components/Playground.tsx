@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { PlayIcon, RefreshCw } from 'lucide-react';
-import { UpdateAction, Updater } from 'object_updater';
+import { updateObject, UpdateRule } from '@/lib/objectUpdater';
 import JsonDiff from './JsonDiff';
 import {
   BarChart,
@@ -22,7 +22,7 @@ import {
 interface PlaygroundProps {
   initialObject: Record<string, any>;
   initialUpdate: Record<string, any>;
-  initialRules: Record<string, any>;
+  initialRules: Record<string, UpdateRule>; 
   title?: string;
   description?: string;
 }
@@ -39,12 +39,11 @@ const Playground: React.FC<PlaygroundProps> = ({
   const [originalObject, setOriginalObject] = useState(initialObject);
   const [updateObject, setUpdateObject] = useState(initialUpdate);
   const [rules, setRules] = useState(initialRules);
-  const [resultObject, setResultObject] = useState({});
+  const [resultObject, setResultObject] = useState<Record<string, any>>({});
   const [rulesText, setRulesText] = useState('');
   const [objectText, setObjectText] = useState('');
   const [updateText, setUpdateText] = useState('');
   const [error, setError] = useState<string | null>(null);
-  const updater = new Updater();
   
   // Format the initial data
   useEffect(() => {
@@ -60,12 +59,15 @@ const Playground: React.FC<PlaygroundProps> = ({
       const parsedUpdate = JSON.parse(updateText);
       const parsedRules = JSON.parse(rulesText);
       
-      setOriginalObject(parsedObject);
-      setUpdateObject(parsedUpdate);
+      // Create deep copies of the objects to avoid reference issues
+      setOriginalObject(JSON.parse(JSON.stringify(parsedObject)));
+      setUpdateObject(JSON.parse(JSON.stringify(parsedUpdate)));
       setRules(parsedRules);
       
-      // Using the object_updater library with Updater class
-      const result = updater.updateObject(parsedObject, parsedUpdate, parsedRules);
+      // Using the updateObject function from objectUpdater
+      // Create a deep copy of parsedObject to avoid updating the original
+      const objectToUpdate = JSON.parse(JSON.stringify(parsedObject));
+      const result = updateObject(objectToUpdate, parsedRules);
       setResultObject(result);
       setError(null);
     } catch (err) {
@@ -87,8 +89,9 @@ const Playground: React.FC<PlaygroundProps> = ({
       const parsedUpdate = JSON.parse(updateText);
       const parsedRules = JSON.parse(rulesText);
       
-      // Using the object_updater library with Updater class
-      const result = updater.updateObject(parsedObject, parsedUpdate, parsedRules);
+      // Create a deep copy of parsedObject to avoid updating the original
+      const objectToUpdate = JSON.parse(JSON.stringify(parsedObject));
+      const result = updateObject(objectToUpdate, parsedRules);
       setResultObject(result);
       setError(null);
     } catch (err) {
@@ -102,28 +105,34 @@ const Playground: React.FC<PlaygroundProps> = ({
     
     const chartData = [];
     
-    // Handle tags array comparison
-    if (Array.isArray(originalObject.tags)) {
+    // Handle tags array comparison if it exists
+    if (Array.isArray(originalObject.tags) || (resultObject && Array.isArray(resultObject.tags))) {
+      const beforeTags = Array.isArray(originalObject.tags) ? originalObject.tags.length : 0;
+      const afterTags = resultObject && Array.isArray(resultObject.tags) ? resultObject.tags.length : 0;
+      
       chartData.push({
         name: 'Tags',
-        before: originalObject.tags.length,
-        after: resultObject.tags ? resultObject.tags.length : 0
+        before: beforeTags,
+        after: afterTags
       });
     }
     
-    // Handle users array comparison
-    if (Array.isArray(originalObject.users)) {
+    // Handle users array comparison if it exists
+    if (Array.isArray(originalObject.users) || (resultObject && Array.isArray(resultObject.users))) {
+      const beforeUsers = Array.isArray(originalObject.users) ? originalObject.users.length : 0;
+      const afterUsers = resultObject && Array.isArray(resultObject.users) ? resultObject.users.length : 0;
+      
       chartData.push({
         name: 'Users',
-        before: originalObject.users.length,
-        after: resultObject.users ? resultObject.users.length : 0
+        before: beforeUsers,
+        after: afterUsers
       });
     }
     
     // Handle salary comparison if it exists
-    if ('salary' in originalObject || 'salary' in resultObject) {
-      const beforeSalary = originalObject.salary || 0;
-      const afterSalary = resultObject.salary || 0;
+    if ('salary' in originalObject || (resultObject && 'salary' in resultObject)) {
+      const beforeSalary = originalObject.salary !== undefined ? originalObject.salary : 0;
+      const afterSalary = resultObject && resultObject.salary !== undefined ? resultObject.salary : 0;
       
       chartData.push({
         name: 'Salary',
@@ -135,7 +144,7 @@ const Playground: React.FC<PlaygroundProps> = ({
     // Add any numeric properties from both objects
     const allKeys = new Set([
       ...Object.keys(originalObject), 
-      ...Object.keys(resultObject)
+      ...Object.keys(resultObject || {})
     ]);
     
     allKeys.forEach(key => {
@@ -143,7 +152,7 @@ const Playground: React.FC<PlaygroundProps> = ({
       if (['tags', 'users', 'salary'].includes(key)) return;
       
       const beforeValue = originalObject[key];
-      const afterValue = resultObject[key];
+      const afterValue = resultObject ? resultObject[key] : undefined;
       
       // Add only if either value is a number
       if (typeof beforeValue === 'number' || typeof afterValue === 'number') {
@@ -161,8 +170,8 @@ const Playground: React.FC<PlaygroundProps> = ({
   const getPieChartData = () => {
     const chartData = [];
     
-    // Tags comparison
-    if (Array.isArray(originalObject.tags) && Array.isArray(resultObject.tags)) {
+    // Tags comparison if both exist
+    if (Array.isArray(originalObject.tags) && resultObject && Array.isArray(resultObject.tags)) {
       // Count unique tags before and after
       const uniqueTagsBefore = new Set(originalObject.tags).size;
       const uniqueTagsAfter = new Set(resultObject.tags).size;
@@ -173,8 +182,8 @@ const Playground: React.FC<PlaygroundProps> = ({
       );
     }
     
-    // Users comparison
-    if (Array.isArray(originalObject.users) && Array.isArray(resultObject.users)) {
+    // Users comparison if both exist
+    if (Array.isArray(originalObject.users) && resultObject && Array.isArray(resultObject.users)) {
       chartData.push(
         { name: 'Users (Before)', value: originalObject.users.length },
         { name: 'Users (After)', value: resultObject.users.length }
