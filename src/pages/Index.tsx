@@ -8,6 +8,7 @@ import DemoShowcase from '@/components/DemoShowcase';
 import TypesSection from '@/components/TypesSection';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Database } from 'lucide-react';
+// Import from object_updater package instead of the local file
 import { UpdateAction } from 'object_updater';
 
 interface UseCase {

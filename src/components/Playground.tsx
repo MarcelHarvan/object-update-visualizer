@@ -4,7 +4,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { PlayIcon, RefreshCw } from 'lucide-react';
-import { updateObject, UpdateRule } from '@/lib/objectUpdater';
+// Import from object_updater package instead of the local file
+import { Updater } from 'object_updater';
 import JsonDiff from './JsonDiff';
 import {
   BarChart,
@@ -22,7 +23,7 @@ import {
 interface PlaygroundProps {
   initialObject: Record<string, any>;
   initialUpdate: Record<string, any>;
-  initialRules: Record<string, UpdateRule>; 
+  initialRules: Record<string, any>; 
   title?: string;
   description?: string;
 }
@@ -44,6 +45,7 @@ const Playground: React.FC<PlaygroundProps> = ({
   const [objectText, setObjectText] = useState('');
   const [updateText, setUpdateText] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const updater = new Updater(); // Create an instance of the Updater class
   
   // Format the initial data
   useEffect(() => {
@@ -64,16 +66,16 @@ const Playground: React.FC<PlaygroundProps> = ({
       setUpdateObject(JSON.parse(JSON.stringify(parsedUpdate)));
       setRules(parsedRules);
       
-      // Using the updateObject function from objectUpdater
+      // Using the updateObject method from Updater instance
       // Create a deep copy of parsedObject to avoid updating the original
       const objectToUpdate = JSON.parse(JSON.stringify(parsedObject));
-      const result = updateObject(objectToUpdate, parsedRules);
+      const result = updater.updateObject(objectToUpdate, parsedRules);
       setResultObject(result);
       setError(null);
     } catch (err) {
       setError((err as Error).message);
     }
-  }, [objectText, updateText, rulesText]);
+  }, [objectText, updateText, rulesText, updater]);
 
   // Reset to initial values
   const handleReset = () => {
@@ -91,7 +93,7 @@ const Playground: React.FC<PlaygroundProps> = ({
       
       // Create a deep copy of parsedObject to avoid updating the original
       const objectToUpdate = JSON.parse(JSON.stringify(parsedObject));
-      const result = updateObject(objectToUpdate, parsedRules);
+      const result = updater.updateObject(objectToUpdate, parsedRules);
       setResultObject(result);
       setError(null);
     } catch (err) {
