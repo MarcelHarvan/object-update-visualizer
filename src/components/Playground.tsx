@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -54,7 +55,7 @@ const Playground: React.FC<PlaygroundProps> = ({
 
   // Apply the rules when component mounts
   useEffect(() => {
-    if (objectText && rulesText) {
+    if (objectText && rulesText && updateText) {
       handleApply();
     }
   }, []); // Only run once on mount
@@ -63,17 +64,18 @@ const Playground: React.FC<PlaygroundProps> = ({
   const handleApply = () => {
     try {
       const parsedObject = JSON.parse(objectText);
+      const parsedUpdate = JSON.parse(updateText);
       const parsedRules = JSON.parse(rulesText);
       
       // Create deep copies of the objects to avoid reference issues
       setOriginalObject(JSON.parse(JSON.stringify(parsedObject)));
-      setUpdateObject(JSON.parse(JSON.stringify(JSON.parse(updateText))));
+      setUpdateObject(JSON.parse(JSON.stringify(parsedUpdate)));
       setRules(parsedRules);
       
       // Using the updateObject method from Updater instance
       // Create a deep copy of parsedObject to avoid updating the original
       const objectToUpdate = JSON.parse(JSON.stringify(parsedObject));
-      const result = updater.updateObject(objectToUpdate, parsedRules);
+      const result = updater.updateObject(objectToUpdate, parsedUpdate, parsedRules);
       setResultObject(result);
       setError(null);
     } catch (err) {

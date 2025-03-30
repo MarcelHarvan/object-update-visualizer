@@ -54,12 +54,16 @@ const DemoShowcase: React.FC<DemoShowcaseProps> = ({ useCases }) => {
   const useCasesWithResults = useMemo(() => {
     return useCases.map(useCase => {
       const sourceObjectCopy = JSON.parse(JSON.stringify(useCase.sourceObject));
-      // Use the Updater class instance to call updateObject
-      const resultObject = updater.updateObject(sourceObjectCopy, useCase.rules);
+      // Apply the update to the source object
+      const updatedObject = updater.updateObject(
+        sourceObjectCopy,
+        useCase.updateObject,
+        useCase.rules
+      );
       
       return {
         ...useCase,
-        resultObject
+        resultObject: updatedObject
       };
     });
   }, [useCases, updater]);
