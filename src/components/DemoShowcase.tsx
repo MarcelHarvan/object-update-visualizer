@@ -28,22 +28,24 @@ interface DemoShowcaseProps {
   useCases: UseCase[];
 }
 
+// Update icon map to use string keys
 const iconMap: Record<string, React.ReactNode> = {
-  [UpdateAction.DELETE]: <Trash2 className="h-5 w-5" />,
-  [UpdateAction.IGNORE]: <XCircle className="h-5 w-5" />,
-  [UpdateAction.REPLACE]: <Replace className="h-5 w-5" />,
-  [UpdateAction.MERGE]: <MergeIcon className="h-5 w-5" />,
-  [UpdateAction.UNION]: <GitMerge className="h-5 w-5" />,
-  [UpdateAction.UPSERT_BY_KEY]: <RefreshCcw className="h-5 w-5" />
+  [UpdateAction.DELETE.toString()]: <Trash2 className="h-5 w-5" />,
+  [UpdateAction.IGNORE.toString()]: <XCircle className="h-5 w-5" />,
+  [UpdateAction.REPLACE.toString()]: <Replace className="h-5 w-5" />,
+  [UpdateAction.MERGE.toString()]: <MergeIcon className="h-5 w-5" />,
+  [UpdateAction.UNION.toString()]: <GitMerge className="h-5 w-5" />,
+  [UpdateAction.UPSERT_BY_KEY.toString()]: <RefreshCcw className="h-5 w-5" />
 };
 
+// Update color map to use string keys
 const colorMap: Record<string, string> = {
-  [UpdateAction.DELETE]: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
-  [UpdateAction.IGNORE]: 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200',
-  [UpdateAction.REPLACE]: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
-  [UpdateAction.MERGE]: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-  [UpdateAction.UNION]: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
-  [UpdateAction.UPSERT_BY_KEY]: 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200'
+  [UpdateAction.DELETE.toString()]: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
+  [UpdateAction.IGNORE.toString()]: 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200',
+  [UpdateAction.REPLACE.toString()]: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
+  [UpdateAction.MERGE.toString()]: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+  [UpdateAction.UNION.toString()]: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
+  [UpdateAction.UPSERT_BY_KEY.toString()]: 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200'
 };
 
 const DemoShowcase: React.FC<DemoShowcaseProps> = ({ useCases }) => {
@@ -76,8 +78,8 @@ const DemoShowcase: React.FC<DemoShowcaseProps> = ({ useCases }) => {
       </TabsList>
       
       {useCasesWithResults.map((useCase, index) => {
-        // Convert action to string to ensure it's not rendered as an object
-        const actionKey = String(useCase.action);
+        // Convert action to string
+        const actionKey = useCase.action.toString();
         
         return (
           <TabsContent 

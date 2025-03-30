@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -25,7 +26,7 @@ const ruleExplanations = [
     description: 'Completely replaces the value at the specified path with a new value.',
     example: `{
   "name": {
-    action: "${UpdateAction.REPLACE}"
+    action: "${UpdateAction.REPLACE.toString()}"
   }
 }`
   },
@@ -35,7 +36,7 @@ const ruleExplanations = [
     description: 'Keeps the original value, ignoring any updates to this property.',
     example: `{
   "config": {
-    action: "${UpdateAction.IGNORE}"
+    action: "${UpdateAction.IGNORE.toString()}"
   }
 }`
   },
@@ -45,7 +46,7 @@ const ruleExplanations = [
     description: 'Completely removes the property from the original object.',
     example: `{
   "temporaryData": {
-    action: "${UpdateAction.DELETE}"
+    action: "${UpdateAction.DELETE.toString()}"
   }
 }`
   },
@@ -55,7 +56,7 @@ const ruleExplanations = [
     description: 'Deep merges arrays, combining values from both original and update arrays.',
     example: `{
   "settings": {
-    action: "${UpdateAction.MERGE}"
+    action: "${UpdateAction.MERGE.toString()}"
   }
 }`
   },
@@ -65,7 +66,7 @@ const ruleExplanations = [
     description: 'Creates a union of arrays, ensuring no duplicate values are added.',
     example: `{
   "permissions": {
-    action: "${UpdateAction.UNION}"
+    action: "${UpdateAction.UNION.toString()}"
   }
 }`
   },
@@ -75,7 +76,7 @@ const ruleExplanations = [
     description: 'Updates existing items or inserts new ones in an array based on a key property.',
     example: `{
   "users": {
-    action: "${UpdateAction.UPSERT_BY_KEY}",
+    action: "${UpdateAction.UPSERT_BY_KEY.toString()}",
     mergeKey: "id"
   }
 }`

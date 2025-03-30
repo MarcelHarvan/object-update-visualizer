@@ -1,10 +1,8 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { PlayIcon, RefreshCw } from 'lucide-react';
-// Import from object_updater package instead of the local file
 import { Updater } from 'object_updater';
 import JsonDiff from './JsonDiff';
 import {
@@ -54,16 +52,22 @@ const Playground: React.FC<PlaygroundProps> = ({
     setRulesText(JSON.stringify(initialRules, null, 2));
   }, [initialObject, initialUpdate, initialRules]);
 
-  // Apply the rules on input change
+  // Apply the rules when component mounts
   useEffect(() => {
+    if (objectText && rulesText) {
+      handleApply();
+    }
+  }, []); // Only run once on mount
+
+  // Apply the rules on button click
+  const handleApply = () => {
     try {
       const parsedObject = JSON.parse(objectText);
-      const parsedUpdate = JSON.parse(updateText);
       const parsedRules = JSON.parse(rulesText);
       
       // Create deep copies of the objects to avoid reference issues
       setOriginalObject(JSON.parse(JSON.stringify(parsedObject)));
-      setUpdateObject(JSON.parse(JSON.stringify(parsedUpdate)));
+      setUpdateObject(JSON.parse(JSON.stringify(JSON.parse(updateText))));
       setRules(parsedRules);
       
       // Using the updateObject method from Updater instance
@@ -75,30 +79,14 @@ const Playground: React.FC<PlaygroundProps> = ({
     } catch (err) {
       setError((err as Error).message);
     }
-  }, [objectText, updateText, rulesText, updater]);
+  };
 
   // Reset to initial values
   const handleReset = () => {
     setObjectText(JSON.stringify(initialObject, null, 2));
     setUpdateText(JSON.stringify(initialUpdate, null, 2));
     setRulesText(JSON.stringify(initialRules, null, 2));
-  };
-
-  // Apply rules button
-  const handleApply = () => {
-    try {
-      const parsedObject = JSON.parse(objectText);
-      const parsedUpdate = JSON.parse(updateText);
-      const parsedRules = JSON.parse(rulesText);
-      
-      // Create a deep copy of parsedObject to avoid updating the original
-      const objectToUpdate = JSON.parse(JSON.stringify(parsedObject));
-      const result = updater.updateObject(objectToUpdate, parsedRules);
-      setResultObject(result);
-      setError(null);
-    } catch (err) {
-      setError((err as Error).message);
-    }
+    handleApply();
   };
 
   // Generate chart data based on objects
