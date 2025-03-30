@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -7,7 +8,7 @@ import DemoShowcase from '@/components/DemoShowcase';
 import TypesSection from '@/components/TypesSection';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Database } from 'lucide-react';
-import { PrimitiveRule, UpdateAction } from 'object_updater';
+import { UpdateAction } from 'object_updater';
 
 interface UseCase {
   title: string;
@@ -15,7 +16,7 @@ interface UseCase {
   action: UpdateAction;
   sourceObject: Record<string, any>;
   updateObject: Record<string, any>;
-  rules: Record<string, PrimitiveRule>;
+  rules: Record<string, any>;
 }
 
 const ruleExplanations = [
@@ -82,6 +83,7 @@ const ruleExplanations = [
   }
 ];
 
+// Initial data for the playground
 const initialPlaygroundObject = {
   name: "Alice",
   age: 30,
@@ -89,7 +91,8 @@ const initialPlaygroundObject = {
   users: [
     { id: 1, name: "Alice" },
     { id: 2, name: "Bob" }
-  ]
+  ],
+  salary: 5000
 };
 
 const initialPlaygroundUpdate = {
@@ -99,14 +102,16 @@ const initialPlaygroundUpdate = {
   users: [
     { id: 2, name: "Bobby" },
     { id: 3, name: "Charlie" }
-  ]
+  ],
+  salary: 6000
 };
 
-const initialPlaygroundRules: Record<string, PrimitiveRule> = {
+const initialPlaygroundRules = {
   name: { action: UpdateAction.REPLACE },
   age: { action: UpdateAction.IGNORE },
   tags: { action: UpdateAction.UNION },
-  users: { action: UpdateAction.UPSERT_BY_KEY, mergeKey: "id" }
+  users: { action: UpdateAction.UPSERT_BY_KEY, mergeKey: "id" },
+  salary: { action: UpdateAction.REPLACE }
 };
 
 const useCases: UseCase[] = [

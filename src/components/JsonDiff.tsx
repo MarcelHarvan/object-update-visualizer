@@ -48,13 +48,13 @@ const JsonDiff: React.FC<JsonDiffProps> = ({ before, after }) => {
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-2 gap-4">
-          <div className="code-block text-xs">
-            <h3 className="text-sm font-medium mb-2">Before</h3>
+          <div className="code-block text-xs font-mono rounded-md bg-muted p-4 overflow-auto">
+            <h3 className="text-sm font-medium mb-2">Original Object</h3>
             <div>
               {diffLines.map((line, index) => (
                 <div 
                   key={`before-${index}`} 
-                  className={line.isDifferent ? 'diff-removed' : ''}
+                  className={line.isDifferent ? 'diff-removed bg-red-100 dark:bg-red-900/30' : ''}
                 >
                   {line.before}
                 </div>
@@ -62,13 +62,13 @@ const JsonDiff: React.FC<JsonDiffProps> = ({ before, after }) => {
             </div>
           </div>
           
-          <div className="code-block text-xs">
-            <h3 className="text-sm font-medium mb-2">After</h3>
+          <div className="code-block text-xs font-mono rounded-md bg-muted p-4 overflow-auto">
+            <h3 className="text-sm font-medium mb-2">After Update</h3>
             <div>
               {diffLines.map((line, index) => (
                 <div 
                   key={`after-${index}`} 
-                  className={line.isDifferent ? 'diff-added' : ''}
+                  className={line.isDifferent ? 'diff-added bg-green-100 dark:bg-green-900/30' : ''}
                 >
                   {line.after}
                 </div>

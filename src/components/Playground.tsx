@@ -1,9 +1,10 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { PlayIcon, RefreshCw } from 'lucide-react';
-import { PrimitiveRule, UpdateAction, Updater } from 'object_updater';
+import { UpdateAction, Updater } from 'object_updater';
 import JsonDiff from './JsonDiff';
 import {
   BarChart,
@@ -21,7 +22,7 @@ import {
 interface PlaygroundProps {
   initialObject: Record<string, any>;
   initialUpdate: Record<string, any>;
-  initialRules: Record<string, PrimitiveRule>;
+  initialRules: Record<string, any>;
   title?: string;
   description?: string;
 }
@@ -47,8 +48,8 @@ const Playground: React.FC<PlaygroundProps> = ({
   
   // Format the initial data
   useEffect(() => {
-    setObjectText(JSON.stringify(originalObject, null, 2));
-    setUpdateText(JSON.stringify(updateObject, null, 2));
+    setObjectText(JSON.stringify(initialObject, null, 2));
+    setUpdateText(JSON.stringify(initialUpdate, null, 2));
     setRulesText(JSON.stringify(initialRules, null, 2));
   }, [initialObject, initialUpdate, initialRules]);
 
@@ -99,49 +100,88 @@ const Playground: React.FC<PlaygroundProps> = ({
   const getBarChartData = () => {
     if (typeof originalObject !== 'object' || !originalObject) return [];
     
-    const before = Object.entries(originalObject).map(([key, value]) => {
-      return {
-        name: key,
-        before: typeof value === 'number' ? value : 
-               (typeof value === 'object' && value !== null ? 
-                 (Array.isArray(value) ? value.length : Object.keys(value).length) : 
-                 value ? 1 : 0)
-      };
-    });
+    const chartData = [];
     
-    const after = Object.entries(resultObject).map(([key, value]) => {
-      return {
-        name: key,
-        after: typeof value === 'number' ? value : 
-              (typeof value === 'object' && value !== null ? 
-                (Array.isArray(value) ? value.length : Object.keys(value).length) : 
-                value ? 1 : 0)
-      };
-    });
+    // Handle tags array comparison
+    if (Array.isArray(originalObject.tags)) {
+      chartData.push({
+        name: 'Tags',
+        before: originalObject.tags.length,
+        after: resultObject.tags ? resultObject.tags.length : 0
+      });
+    }
     
-    // Merge before and after data
-    const combined: any[] = [];
+    // Handle users array comparison
+    if (Array.isArray(originalObject.users)) {
+      chartData.push({
+        name: 'Users',
+        before: originalObject.users.length,
+        after: resultObject.users ? resultObject.users.length : 0
+      });
+    }
     
-    [...before, ...after].forEach(item => {
-      const existingItem = combined.find(i => i.name === item.name);
-      if (existingItem) {
-        combined[combined.indexOf(existingItem)] = {...existingItem, ...item};
-      } else {
-        combined.push(item);
+    // Handle salary comparison if it exists
+    if ('salary' in originalObject || 'salary' in resultObject) {
+      const beforeSalary = originalObject.salary || 0;
+      const afterSalary = resultObject.salary || 0;
+      
+      chartData.push({
+        name: 'Salary',
+        before: beforeSalary,
+        after: afterSalary
+      });
+    }
+    
+    // Add any numeric properties from both objects
+    const allKeys = new Set([
+      ...Object.keys(originalObject), 
+      ...Object.keys(resultObject)
+    ]);
+    
+    allKeys.forEach(key => {
+      // Skip already added special properties
+      if (['tags', 'users', 'salary'].includes(key)) return;
+      
+      const beforeValue = originalObject[key];
+      const afterValue = resultObject[key];
+      
+      // Add only if either value is a number
+      if (typeof beforeValue === 'number' || typeof afterValue === 'number') {
+        chartData.push({
+          name: key,
+          before: typeof beforeValue === 'number' ? beforeValue : 0,
+          after: typeof afterValue === 'number' ? afterValue : 0
+        });
       }
     });
     
-    return combined;
+    return chartData;
   };
 
   const getPieChartData = () => {
-    const beforeKeys = Object.keys(originalObject).length;
-    const afterKeys = Object.keys(resultObject).length;
+    const chartData = [];
     
-    return [
-      { name: 'Before', value: beforeKeys },
-      { name: 'After', value: afterKeys }
-    ];
+    // Tags comparison
+    if (Array.isArray(originalObject.tags) && Array.isArray(resultObject.tags)) {
+      // Count unique tags before and after
+      const uniqueTagsBefore = new Set(originalObject.tags).size;
+      const uniqueTagsAfter = new Set(resultObject.tags).size;
+      
+      chartData.push(
+        { name: 'Tags (Before)', value: uniqueTagsBefore },
+        { name: 'Tags (After)', value: uniqueTagsAfter }
+      );
+    }
+    
+    // Users comparison
+    if (Array.isArray(originalObject.users) && Array.isArray(resultObject.users)) {
+      chartData.push(
+        { name: 'Users (Before)', value: originalObject.users.length },
+        { name: 'Users (After)', value: resultObject.users.length }
+      );
+    }
+    
+    return chartData;
   };
 
   return (

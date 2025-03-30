@@ -19,7 +19,7 @@ interface RuleExplanationCardProps {
   example: string;
 }
 
-const iconMap = {
+const iconMap: Record<UpdateAction, React.ReactNode> = {
   [UpdateAction.DELETE]: <Trash2 className="h-5 w-5" />,
   [UpdateAction.IGNORE]: <XCircle className="h-5 w-5" />,
   [UpdateAction.REPLACE]: <Replace className="h-5 w-5" />,
@@ -28,7 +28,7 @@ const iconMap = {
   [UpdateAction.UPSERT_BY_KEY]: <RefreshCcw className="h-5 w-5" />,
 };
 
-const colorMap = {
+const colorMap: Record<UpdateAction, string> = {
   [UpdateAction.DELETE]: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
   [UpdateAction.IGNORE]: 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200',
   [UpdateAction.REPLACE]: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
@@ -58,7 +58,7 @@ const RuleExplanationCard: React.FC<RuleExplanationCardProps> = ({
         <CardDescription>{description}</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="code-block text-xs">
+        <div className="code-block text-xs font-mono rounded-md bg-muted p-3">
           <pre>{example}</pre>
         </div>
       </CardContent>

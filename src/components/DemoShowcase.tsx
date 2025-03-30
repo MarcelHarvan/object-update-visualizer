@@ -1,9 +1,9 @@
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { PrimitiveRule, UpdateAction } from 'object_updater';
+import { UpdateAction, Updater } from 'object_updater';
 import { 
   Replace, 
   XCircle, 
@@ -12,6 +12,7 @@ import {
   GitMerge, 
   RefreshCcw 
 } from 'lucide-react';
+import JsonDiff from './JsonDiff';
 
 interface UseCase {
   title: string;
@@ -19,7 +20,7 @@ interface UseCase {
   action: UpdateAction;
   sourceObject: Record<string, any>;
   updateObject: Record<string, any>;
-  rules: Record<string, PrimitiveRule>;
+  rules: Record<string, any>;
 }
 
 interface DemoShowcaseProps {
@@ -45,6 +46,24 @@ const colorMap = {
 };
 
 const DemoShowcase: React.FC<DemoShowcaseProps> = ({ useCases }) => {
+  const updater = new Updater();
+  
+  // Calculate the result objects for each use case
+  const useCasesWithResults = useMemo(() => {
+    return useCases.map(useCase => {
+      const resultObject = updater.updateObject(
+        useCase.sourceObject, 
+        useCase.updateObject, 
+        useCase.rules
+      );
+      
+      return {
+        ...useCase,
+        resultObject
+      };
+    });
+  }, [useCases]);
+  
   return (
     <Tabs defaultValue={useCases[0]?.title.toLowerCase().replace(/\s+/g, '-') || '0'}>
       <TabsList className="mb-4">
@@ -58,7 +77,7 @@ const DemoShowcase: React.FC<DemoShowcaseProps> = ({ useCases }) => {
         ))}
       </TabsList>
       
-      {useCases.map((useCase, index) => (
+      {useCasesWithResults.map((useCase, index) => (
         <TabsContent 
           key={index} 
           value={useCase.title.toLowerCase().replace(/\s+/g, '-')}
@@ -77,25 +96,30 @@ const DemoShowcase: React.FC<DemoShowcaseProps> = ({ useCases }) => {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
                 <div>
                   <h3 className="text-sm font-medium mb-2">Original Object</h3>
-                  <div className="code-block p-3 text-xs">
+                  <div className="code-block p-3 text-xs font-mono rounded-md bg-muted">
                     <pre>{JSON.stringify(useCase.sourceObject, null, 2)}</pre>
                   </div>
                 </div>
                 <div>
                   <h3 className="text-sm font-medium mb-2">Update</h3>
-                  <div className="code-block p-3 text-xs">
+                  <div className="code-block p-3 text-xs font-mono rounded-md bg-muted">
                     <pre>{JSON.stringify(useCase.updateObject, null, 2)}</pre>
                   </div>
                 </div>
                 <div>
                   <h3 className="text-sm font-medium mb-2">Rules</h3>
-                  <div className="code-block p-3 text-xs">
+                  <div className="code-block p-3 text-xs font-mono rounded-md bg-muted">
                     <pre>{JSON.stringify(useCase.rules, null, 2)}</pre>
                   </div>
                 </div>
+              </div>
+              
+              <div className="mt-6">
+                <h3 className="text-sm font-medium mb-2">Result After Update</h3>
+                <JsonDiff before={useCase.sourceObject} after={useCase.resultObject} />
               </div>
             </CardContent>
           </Card>
