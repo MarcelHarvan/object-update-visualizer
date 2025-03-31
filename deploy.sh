@@ -10,6 +10,9 @@ npm run build
 # navigate into the build output directory
 cd dist
 
+# Add .nojekyll file to prevent GitHub Pages from ignoring files that start with an underscore
+touch .nojekyll
+
 # if you are deploying to a custom domain
 # echo 'www.example.com' > CNAME
 
